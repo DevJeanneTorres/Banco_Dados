@@ -1,0 +1,1993 @@
+--
+-- PostgreSQL database cluster dump
+--
+
+-- Started on 2024-11-19 14:37:25
+
+SET default_transaction_read_only = off;
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+
+--
+-- Roles
+--
+
+CREATE ROLE postgres;
+ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'md5a3556571e93b0d20722ba62be61e8c2d';
+
+--
+-- User Configurations
+--
+
+
+
+
+
+
+--
+-- Databases
+--
+
+--
+-- Database "template1" dump
+--
+
+\connect template1
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.20
+-- Dumped by pg_dump version 16.4
+
+-- Started on 2024-11-19 14:37:25
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 6 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- TOC entry 2812 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2024-11-19 14:37:26
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- Database "EBank" dump
+--
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.20
+-- Dumped by pg_dump version 16.4
+
+-- Started on 2024-11-19 14:37:27
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2881 (class 1262 OID 24676)
+-- Name: EBank; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE "EBank" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Portuguese_Brazil.1252';
+
+
+ALTER DATABASE "EBank" OWNER TO postgres;
+
+\connect "EBank"
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 6 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 203 (class 1259 OID 24761)
+-- Name: agencia; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.agencia (
+    banco_numero integer NOT NULL,
+    numero integer NOT NULL,
+    nome character varying(80) NOT NULL,
+    ativo boolean DEFAULT true NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.agencia OWNER TO postgres;
+
+--
+-- TOC entry 202 (class 1259 OID 24754)
+-- Name: banco; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.banco (
+    numero integer NOT NULL,
+    nome character varying(50) NOT NULL,
+    ativo boolean DEFAULT true NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.banco OWNER TO postgres;
+
+--
+-- TOC entry 205 (class 1259 OID 24775)
+-- Name: cliente; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cliente (
+    numero bigint NOT NULL,
+    nome character varying(120) NOT NULL,
+    email character varying(250) NOT NULL,
+    ativo boolean DEFAULT true NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.cliente OWNER TO postgres;
+
+--
+-- TOC entry 204 (class 1259 OID 24773)
+-- Name: cliente_numero_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cliente_numero_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.cliente_numero_seq OWNER TO postgres;
+
+--
+-- TOC entry 2883 (class 0 OID 0)
+-- Dependencies: 204
+-- Name: cliente_numero_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cliente_numero_seq OWNED BY public.cliente.numero;
+
+
+--
+-- TOC entry 210 (class 1259 OID 24812)
+-- Name: cliente_transacoes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cliente_transacoes (
+    id bigint NOT NULL,
+    banco_numero integer NOT NULL,
+    agencia_numero integer NOT NULL,
+    conta_corrente_numero bigint NOT NULL,
+    conta_corrente_digito smallint NOT NULL,
+    cliente_numero bigint NOT NULL,
+    tipo_transacao_id smallint NOT NULL,
+    valor numeric(15,2) NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.cliente_transacoes OWNER TO postgres;
+
+--
+-- TOC entry 209 (class 1259 OID 24810)
+-- Name: cliente_transacoes_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cliente_transacoes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.cliente_transacoes_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2884 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: cliente_transacoes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cliente_transacoes_id_seq OWNED BY public.cliente_transacoes.id;
+
+
+--
+-- TOC entry 206 (class 1259 OID 24783)
+-- Name: conta_corrente; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.conta_corrente (
+    banco_numero integer NOT NULL,
+    agencia_numero integer NOT NULL,
+    numero bigint NOT NULL,
+    digito smallint NOT NULL,
+    cliente_numero bigint NOT NULL,
+    ativo boolean DEFAULT true NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.conta_corrente OWNER TO postgres;
+
+--
+-- TOC entry 208 (class 1259 OID 24802)
+-- Name: tipo_transacao; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tipo_transacao (
+    id smallint NOT NULL,
+    nome character varying(50) NOT NULL,
+    ativo boolean DEFAULT true NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.tipo_transacao OWNER TO postgres;
+
+--
+-- TOC entry 207 (class 1259 OID 24800)
+-- Name: tipo_transacao_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.tipo_transacao_id_seq
+    AS smallint
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.tipo_transacao_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2885 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: tipo_transacao_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.tipo_transacao_id_seq OWNED BY public.tipo_transacao.id;
+
+
+--
+-- TOC entry 2715 (class 2604 OID 24778)
+-- Name: cliente numero; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cliente ALTER COLUMN numero SET DEFAULT nextval('public.cliente_numero_seq'::regclass);
+
+
+--
+-- TOC entry 2723 (class 2604 OID 24815)
+-- Name: cliente_transacoes id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cliente_transacoes ALTER COLUMN id SET DEFAULT nextval('public.cliente_transacoes_id_seq'::regclass);
+
+
+--
+-- TOC entry 2720 (class 2604 OID 24805)
+-- Name: tipo_transacao id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tipo_transacao ALTER COLUMN id SET DEFAULT nextval('public.tipo_transacao_id_seq'::regclass);
+
+
+--
+-- TOC entry 2868 (class 0 OID 24761)
+-- Dependencies: 203
+-- Data for Name: agencia; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.agencia (banco_numero, numero, nome, ativo, data_criacao) FROM stdin;
+1	1	Agencia numero 1 do banco do Banco do Brasil S.A.	t	2024-11-13 15:49:12.596321
+1	2	Agencia numero 2 do banco do Banco do Brasil S.A.	t	2024-11-13 15:49:12.596321
+1	3	Agencia numero 3 do banco do Banco do Brasil S.A.	t	2024-11-13 15:49:12.596321
+1	4	Agencia numero 4 do banco do Banco do Brasil S.A.	t	2024-11-13 15:49:12.596321
+1	5	Agencia numero 5 do banco do Banco do Brasil S.A.	t	2024-11-13 15:49:12.596321
+1	6	Agencia numero 6 do banco do Banco do Brasil S.A.	t	2024-11-13 15:49:12.596321
+1	7	Agencia numero 7 do banco do Banco do Brasil S.A.	t	2024-11-13 15:49:12.596321
+1	8	Agencia numero 8 do banco do Banco do Brasil S.A.	t	2024-11-13 15:49:12.596321
+1	9	Agencia numero 9 do banco do Banco do Brasil S.A.	t	2024-11-13 15:49:12.596321
+1	10	Agencia numero 10 do banco do Banco do Brasil S.A.	t	2024-11-13 15:49:12.596321
+\.
+
+
+--
+-- TOC entry 2867 (class 0 OID 24754)
+-- Dependencies: 202
+-- Data for Name: banco; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.banco (numero, nome, ativo, data_criacao) FROM stdin;
+654	\tBanco A.J. Renner S.A.	t	2024-11-13 15:40:55.872652
+246	Banco ABC Brasil S.A.	t	2024-11-13 15:40:55.872652
+25	Banco Alfa S.A.	t	2024-11-13 15:40:55.872652
+641	Banco alvorada S.A.	t	2024-11-13 15:40:55.872652
+213	Banco Arbi	t	2024-11-13 15:40:55.872652
+19	Banco Azteca do Brasil	t	2024-11-13 15:40:55.872652
+29	Banco Banerj S.A	t	2024-11-13 15:40:55.872652
+0	Banco Bankpar S.A.	t	2024-11-13 15:40:55.872652
+740	Banco Barclays S.A.	t	2024-11-13 15:40:55.872652
+107	Banco BBM	t	2024-11-13 15:40:55.872652
+1	\tBanco A.J. Renner S.A.	t	2024-11-13 15:49:06.863525
+\.
+
+
+--
+-- TOC entry 2870 (class 0 OID 24775)
+-- Dependencies: 205
+-- Data for Name: cliente; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cliente (numero, nome, email, ativo, data_criacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2875 (class 0 OID 24812)
+-- Dependencies: 210
+-- Data for Name: cliente_transacoes; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cliente_transacoes (id, banco_numero, agencia_numero, conta_corrente_numero, conta_corrente_digito, cliente_numero, tipo_transacao_id, valor, data_criacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2871 (class 0 OID 24783)
+-- Dependencies: 206
+-- Data for Name: conta_corrente; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.conta_corrente (banco_numero, agencia_numero, numero, digito, cliente_numero, ativo, data_criacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2873 (class 0 OID 24802)
+-- Dependencies: 208
+-- Data for Name: tipo_transacao; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.tipo_transacao (id, nome, ativo, data_criacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2886 (class 0 OID 0)
+-- Dependencies: 204
+-- Name: cliente_numero_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cliente_numero_seq', 1, false);
+
+
+--
+-- TOC entry 2887 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: cliente_transacoes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cliente_transacoes_id_seq', 1, false);
+
+
+--
+-- TOC entry 2888 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: tipo_transacao_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.tipo_transacao_id_seq', 1, false);
+
+
+--
+-- TOC entry 2728 (class 2606 OID 24767)
+-- Name: agencia agencia_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.agencia
+    ADD CONSTRAINT agencia_pkey PRIMARY KEY (banco_numero, numero);
+
+
+--
+-- TOC entry 2726 (class 2606 OID 24760)
+-- Name: banco banco_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.banco
+    ADD CONSTRAINT banco_pkey PRIMARY KEY (numero);
+
+
+--
+-- TOC entry 2730 (class 2606 OID 24782)
+-- Name: cliente cliente_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cliente
+    ADD CONSTRAINT cliente_pkey PRIMARY KEY (numero);
+
+
+--
+-- TOC entry 2736 (class 2606 OID 24818)
+-- Name: cliente_transacoes cliente_transacoes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cliente_transacoes
+    ADD CONSTRAINT cliente_transacoes_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2732 (class 2606 OID 24789)
+-- Name: conta_corrente conta_corrente_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conta_corrente
+    ADD CONSTRAINT conta_corrente_pkey PRIMARY KEY (banco_numero, agencia_numero, numero, digito, cliente_numero);
+
+
+--
+-- TOC entry 2734 (class 2606 OID 24809)
+-- Name: tipo_transacao tipo_transacao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tipo_transacao
+    ADD CONSTRAINT tipo_transacao_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2737 (class 2606 OID 24768)
+-- Name: agencia agencia_banco_numero_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.agencia
+    ADD CONSTRAINT agencia_banco_numero_fkey FOREIGN KEY (banco_numero) REFERENCES public.banco(numero);
+
+
+--
+-- TOC entry 2740 (class 2606 OID 24819)
+-- Name: cliente_transacoes cliente_transacoes_banco_numero_agencia_numero_conta_corre_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cliente_transacoes
+    ADD CONSTRAINT cliente_transacoes_banco_numero_agencia_numero_conta_corre_fkey FOREIGN KEY (banco_numero, agencia_numero, conta_corrente_numero, conta_corrente_digito, cliente_numero) REFERENCES public.conta_corrente(banco_numero, agencia_numero, numero, digito, cliente_numero);
+
+
+--
+-- TOC entry 2738 (class 2606 OID 24790)
+-- Name: conta_corrente conta_corrente_banco_numero_agencia_numero_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conta_corrente
+    ADD CONSTRAINT conta_corrente_banco_numero_agencia_numero_fkey FOREIGN KEY (banco_numero, agencia_numero) REFERENCES public.agencia(banco_numero, numero);
+
+
+--
+-- TOC entry 2739 (class 2606 OID 24795)
+-- Name: conta_corrente conta_corrente_cliente_numero_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conta_corrente
+    ADD CONSTRAINT conta_corrente_cliente_numero_fkey FOREIGN KEY (cliente_numero) REFERENCES public.cliente(numero);
+
+
+--
+-- TOC entry 2882 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2024-11-19 14:37:27
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- Database "bd_caso_estudo_vendas" dump
+--
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.20
+-- Dumped by pg_dump version 16.4
+
+-- Started on 2024-11-19 14:37:27
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2812 (class 1262 OID 16394)
+-- Name: bd_caso_estudo_vendas; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE bd_caso_estudo_vendas WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Portuguese_Brazil.1252';
+
+
+ALTER DATABASE bd_caso_estudo_vendas OWNER TO postgres;
+
+\connect bd_caso_estudo_vendas
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 6 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- TOC entry 2813 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2024-11-19 14:37:28
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- Database "escola" dump
+--
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.20
+-- Dumped by pg_dump version 16.4
+
+-- Started on 2024-11-19 14:37:28
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2817 (class 1262 OID 24585)
+-- Name: escola; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE escola WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Portuguese_Brazil.1252';
+
+
+ALTER DATABASE escola OWNER TO postgres;
+
+\connect escola
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2818 (class 0 OID 0)
+-- Dependencies: 2817
+-- Name: DATABASE escola; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON DATABASE escola IS 'Introdução de Banco de Dados Relacional com  Prof. Hudson';
+
+
+--
+-- TOC entry 6 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 202 (class 1259 OID 24586)
+-- Name: alunos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.alunos (
+    nome character varying(100),
+    email character varying(300),
+    telefone character varying(12),
+    uf character(2)
+);
+
+
+ALTER TABLE public.alunos OWNER TO postgres;
+
+--
+-- TOC entry 2811 (class 0 OID 24586)
+-- Dependencies: 202
+-- Data for Name: alunos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.alunos (nome, email, telefone, uf) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2819 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2024-11-19 14:37:28
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- Database "govgdf" dump
+--
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.20
+-- Dumped by pg_dump version 16.4
+
+-- Started on 2024-11-19 14:37:28
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2824 (class 1262 OID 24824)
+-- Name: govgdf; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE govgdf WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Portuguese_Brazil.1252';
+
+
+ALTER DATABASE govgdf OWNER TO postgres;
+
+\connect govgdf
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 6 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 202 (class 1259 OID 24831)
+-- Name: remuneracao_2013_01; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.remuneracao_2013_01 (
+    nome text,
+    cpf_formatado text,
+    dc_empresa text,
+    dc_cargo text,
+    dc_funcao text,
+    dc_grupo_sitfunc text,
+    co_mes_referencia integer,
+    co_exercicio integer,
+    vl_liquido numeric(8,2)
+);
+
+
+ALTER TABLE public.remuneracao_2013_01 OWNER TO postgres;
+
+--
+-- TOC entry 203 (class 1259 OID 24837)
+-- Name: remuneracao_2013_02; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.remuneracao_2013_02 (
+    nome text,
+    cpf_formatado text,
+    dc_empresa text,
+    dc_cargo text,
+    dc_funcao text,
+    dc_grupo_sitfunc text,
+    co_mes_referencia integer,
+    co_exercicio integer,
+    vl_liquido numeric(8,2)
+);
+
+
+ALTER TABLE public.remuneracao_2013_02 OWNER TO postgres;
+
+--
+-- TOC entry 2817 (class 0 OID 24831)
+-- Dependencies: 202
+-- Data for Name: remuneracao_2013_01; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.remuneracao_2013_01 (nome, cpf_formatado, dc_empresa, dc_cargo, dc_funcao, dc_grupo_sitfunc, co_mes_referencia, co_exercicio, vl_liquido) FROM stdin;
+ADELSON MENDES                                    	***670171**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	TECNICO GE APOIO ADMINISTRAT  	                                                            	ATIVO                         	1	2013	8003.27
+ADELSON RAMOS DA SILVA                            	***451331**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	AGENTE GE VIGILANCIA          	                                                            	ATIVO                         	1	2013	3995.03
+ADELSON RAMOS NUNES                               	***206757**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	AGENTE GE VIGILANCIA          	                                                            	ATIVO                         	1	2013	5825.90
+ADELSON ROCHA DE ARAUJO                           	***382101**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	TECNICO DE ATIV CULTURAIS     	                                                            	APOSENTADO                    	1	2013	6199.51
+ADELSON RODRIGUES DA SILVA                        	***419401**	ADMINISTRACAO REGIONAL DE ITAPOA                                                	                              	SECRETARIO ADMINISTRATIVO                                   	ATIVO                         	1	2013	1178.15
+ADELSON RODRIGUES LARES                           	***280391**	nan	                              	AGENTE OPERACIONAL                                          	OUTROS                        	1	2013	1823.80
+ADELSON SIQUEIRA DE LIMA                          	***878151**	DETRAN - BANCA EXAMINADORA                                                      	EXAMINADOR TEORICO-PRATICO    	                                                            	ATIVO                         	1	2013	1632.00
+ADELSON SIQUEIRA DE LIMA                          	***878151**	DEPARTAMENTO DE TRANSITO DO DISTRITO FEDERAL                                    	AG.TRANSITO DETRAN            	GERENTE                                                     	ATIVO                         	1	2013	10074.15
+ADELSON VIEIRA                                    	***082046**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	                                                            	APOSENTADO                    	1	2013	13525.91
+ADELVAN CHAVES DE BARROS                          	***880353**	SECRETARIA DE ESTADO DE SAUDE                                                   	                              	ASSESSOR TECNICO                                            	ATIVO                         	1	2013	1406.10
+ADELVANIR SILVA DA ROCHA                          	***766241**	SECRETARIA DE ESTADO DE SAUDE                                                   	AUXILIAR DE ENFERMAGEM        	                                                            	APOSENTADO                    	1	2013	4031.91
+ADELVINA MARIA DE ANDRADE SILVA                   	***360801**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	ASSISTENTE GRS                	                                                            	PENSAO                        	1	2013	3641.50
+ADELYANY BATISTA DOS SANTOS                       	***739901**	SECRETARIA DE ESTADO DE SAUDE                                                   	ASSISTENTE SOCIAL             	                                                            	ATIVO                         	1	2013	7078.38
+ADELZUITE CARVALHO FARO                           	***034861**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	TECNICO GE APOIO ADMINISTRAT  	                                                            	APOSENTADO                    	1	2013	4577.82
+ADEMAR ALVES BEZERRA                              	***229138**	SECRETARIA DE ESTADO DE SAUDE                                                   	AUXILIAR DE ENFERMAGEM        	                                                            	PENSAO                        	1	2013	3845.20
+ADEMAR ALVES BEZERRA                              	***229138**	ADMINISTRACAO REGIONAL DO GAMA                                                  	ANALISTA POL PUBL E GEST GOV  	                                                            	ATIVO                         	1	2013	7197.03
+ADEMAR ALVES DE AZEVEDO                           	***827241**	SECRETARIA DE ESTADO DE SAUDE                                                   	AGENTE DE SAUDE PUBLICA       	                                                            	APOSENTADO                    	1	2013	3775.11
+ADEMAR ALVES DOS SANTOS                           	***086281**	SECRETARIA DE ESTADO DE SAUDE                                                   	AUXILIAR DE ENFERMAGEM        	                                                            	ATIVO                         	1	2013	4558.94
+ADEMAR ALVES RODRIGUES                            	***224501**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	ANALISTA POL PUBL E GEST GOV  	                                                            	APOSENTADO                    	1	2013	4278.28
+ADEMAR ANTONIO DOS PRAZERES SOARES                	***993671**	POLICIA MILITAR DO DISTRITO FEDERAL                                             	3 SARGENTO PM INATIVO         	                                                            	APOSENTADO                    	1	2013	103.33
+ADEMAR APARECIDA N DE OLIVEIRA                    	***288751**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	                                                            	APOSENTADO                    	1	2013	9162.68
+ADEMAR AVELINO NASCIMENTO                         	***092031**	SECRETARIA DE ESTADO DE SAUDE                                                   	ANALISTA POL PUBL E GEST GOV  	                                                            	ATIVO                         	1	2013	4784.34
+ADEMAR BARBOSA DE SA                              	***601521**	DEPARTAMENTO DE ESTRADAS DE RODAGEM DO DF                                       	AGENTE DE ATIV. RODOVIARIAS   	                                                            	APOSENTADO                    	1	2013	507.79
+ADEMAR BARBOSA DE SA                              	***601521**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	AUXILIAR ATIV. RODOVIARIAS    	                                                            	APOSENTADO                    	1	2013	4179.98
+ADEMAR BARBOSA DO NASCIMENTO                      	***707551**	SECRETARIA DE ESTADO DE SAUDE                                                   	AOSD-LAVAND.HOSPITALAR        	                                                            	ATIVO                         	1	2013	3595.91
+ADEMAR BARRETO ROCHA                              	***897091**	DFTRANS                                                                         	AUXILIAR TRANSPORTE URBANO    	                                                            	ATIVO                         	1	2013	2582.08
+ADEMAR BENEVIDES LIRA                             	***595301**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	AGENTE GE VIGILANCIA          	                                                            	APOSENTADO                    	1	2013	2654.84
+ADEMAR CAMPOS ARANHA                              	***304801**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	                                                            	APOSENTADO                    	1	2013	6545.13
+ADEMAR CANUTO DE MACEDO                           	***211761**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	SUPERVISOR                                                  	ATIVO                         	1	2013	5573.30
+ADEMAR CARDOSO DA SILVA                           	***955191**	SECRETARIA DE ESTADO DE SAUDE                                                   	AOSD SERVICOS GERAIS          	GRAT. REPRES. GAB.    GAG  SES                              	ATIVO                         	1	2013	3998.04
+ADEMAR CIRILO VIEIRA                              	***600728**	SERVICO DE LIMPEZA URBANA                                                       	AGENTE GRS                    	                                                            	ATIVO                         	1	2013	3287.75
+ADEMAR COIMBRA DE OLIVEIRA                        	***771601**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	                                                            	ATIVO                         	1	2013	7288.86
+ADEMAR CONCEICAO LISBOA                           	***312011**	POLICIA MILITAR DO DISTRITO FEDERAL                                             	2 SARGENTO PM INATIVO         	                                                            	APOSENTADO                    	1	2013	297.08
+ADEMAR CRUS DE OLIVEIRA                           	***125051**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	AGENTE GRS                    	                                                            	APOSENTADO                    	1	2013	2291.55
+ADEMAR DAVID LINHARES NETO                        	***570121**	SECRETARIA DE ESTADO DE SAUDE                                                   	MED.RESID. - GINECO.E OBSTET  	                                                            	ATIVO                         	1	2013	2705.13
+ADEMAR DE ANDRADE BERTUCCI                        	***965827**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	ESP POL PUBL E GESTAO GOV     	                                                            	APOSENTADO                    	1	2013	6317.92
+ADEMAR DE BARROS LIMA JUNIOR                      	***557881**	SECRETARIA DE ESTADO DE SAUDE                                                   	FARMACEUTICO BIOQ. LABORATOR  	                                                            	ATIVO                         	1	2013	3287.73
+ADEMAR DE JESUS MENEZES                           	***830231**	SEC.DE ESTADO DA CASA CIVIL,RELACOES INSTITUCIONAIS E SOCIAIS DO DF             	                              	ASSESSOR ESPECIAL                                           	ATIVO                         	1	2013	5008.37
+ADEMAR DE QUEIROZ MONTEIRO                        	***386375**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	AGENTE GE VIGILANCIA          	                                                            	ATIVO                         	1	2013	3744.74
+ADEMAR EUSTAQUIO DE CARVALHO                      	***121201**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	AUDITOR FISCAL DE ATIV. URB.  	                                                            	APOSENTADO                    	1	2013	11228.98
+ADEMAR FELIPE DE ARRUDA                           	***226701**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	TECNICO GE SERV ESP OB CIVIS  	                                                            	APOSENTADO                    	1	2013	2414.67
+ADEMAR FERNANDES DE CARVALHO                      	***922416**	nan	AUDITOR FISC. ATIV. URBANAS   	                                                            	OUTROS                        	1	2013	13039.26
+ADEMAR FERNANDES DE CARVALHO                      	***922416**	AGENCIA DE FISCALIZACAO DO DISTRITO FEDERAL                                     	                              	                                                            	ATIVO                         	1	2013	1616.61
+ADEMAR FERRACIOLI                                 	***032251**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	AUDITOR DE CONTROLE INTERNO   	                                                            	APOSENTADO                    	1	2013	14562.29
+ADEMAR FERREIRA DE CARVALHO                       	***915461**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	AGENTE GE VIGILANCIA          	                                                            	APOSENTADO                    	1	2013	1117.34
+ADEMAR FIALHO DA SILVA                            	***826017**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	                                                            	APOSENTADO                    	1	2013	6037.21
+ADEMAR FLORES MOREIRA                             	***372052**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	                                                            	ATIVO                         	1	2013	6455.73
+ADEMAR GAMA PIRES                                 	***426811**	SECRETARIA DE ESTADO DE SAUDE                                                   	AG. TELECOMUNICACOES E ELETR  	CHEFE                                                       	ATIVO                         	1	2013	6521.19
+ADEMAR HORMINDO DE ASSIS                          	***765081**	COMPANHIA URBANIZADORA DA NOVA CAPITAL DO BRASIL                                	AUXILIAR DE SERVICOS GERAIS   	                                                            	ATIVO                         	1	2013	1468.91
+ADEMAR JOSE CABRAL                                	***388341**	SECRETARIA DE ESTADO DE SAUDE                                                   	MEDICO - GINECO.E OBSTETRICI  	                                                            	APOSENTADO                    	1	2013	17798.85
+\.
+
+
+--
+-- TOC entry 2818 (class 0 OID 24837)
+-- Dependencies: 203
+-- Data for Name: remuneracao_2013_02; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.remuneracao_2013_02 (nome, cpf_formatado, dc_empresa, dc_cargo, dc_funcao, dc_grupo_sitfunc, co_mes_referencia, co_exercicio, vl_liquido) FROM stdin;
+ADEMAR JOSE DA SILVA                              	***570201**	nan	ANALISTA POL PUBL E GEST GOV  	                                                            	OUTROS                        	1	2013	5297.78
+ADEMAR JOSE PREDIGER                              	***071241**	SECRETARIA DE ESTADO DE SAUDE                                                   	MOTORISTA                     	                                                            	ATIVO                         	1	2013	3429.89
+ADEMAR LOPES DA SILVA                             	***328751**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	AGENTE GE VIGILANCIA          	                                                            	ATIVO                         	1	2013	4333.37
+ADEMAR MAGALHAES DE OLIVEIRA                      	***641501**	DEPARTAMENTO DE TRANSITO DO DISTRITO FEDERAL                                    	AG.TRANSITO DETRAN            	                                                            	ATIVO                         	1	2013	12448.63
+ADEMAR MEDELO DA SILVA                            	***193741**	DEPARTAMENTO DE ESTRADAS DE RODAGEM DO DF                                       	TECNICO ATIV. RODOVIARIAS     	                                                            	APOSENTADO                    	1	2013	1100.70
+ADEMAR MEDELO DA SILVA                            	***193741**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	TECNICO ATIV. RODOVIARIAS     	                                                            	APOSENTADO                    	1	2013	5842.91
+ADEMAR MELO DOS SANTOS                            	***534791**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	AGENTE GE VIGILANCIA          	                                                            	ATIVO                         	1	2013	4545.01
+ADEMAR MOTA                                       	***221611**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	TECNICO GE SERV ESP OB CIVIS  	                                                            	APOSENTADO                    	1	2013	4477.17
+ADEMAR NASCIMENTO DE SOUZA                        	***490801**	SECRETARIA DE ESTADO DE SAUDE                                                   	MOTORISTA                     	                                                            	ATIVO                         	1	2013	3791.24
+ADEMAR ORNELAS DURAES                             	***669391**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	AGENTE GE VIGILANCIA          	                                                            	ATIVO                         	1	2013	4433.08
+ADEMAR P DOS SANTOS ZONZINI                       	***729307**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	                                                            	APOSENTADO                    	1	2013	8126.03
+ADEMAR PACHECO DE LIMA                            	***374561**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	AGENTE GE VIGILANCIA          	                                                            	ATIVO                         	1	2013	7877.55
+ADEMAR PAULO GREGORIO                             	***926076**	SECRETARIA DE ESTADO DE SAUDE                                                   	TECNICO ADMINISTRATIVO        	                                                            	ATIVO                         	1	2013	4487.68
+ADEMAR PEREIRA BARBOSA                            	***858621**	SECRETARIA DE ESTADO DE ADMINISTRACAO PUBLICA DO DF                             	AUXILIAR ADMINISTRATIVO       	                                                            	ATIVO                         	1	2013	3351.90
+ADEMAR PEREIRA CARDOSO                            	***556631**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	TECNICO DE GESTAO FAZENDARIA  	                                                            	APOSENTADO                    	1	2013	6714.52
+ADEMAR PEREIRA E SILVA                            	***225881**	SERVICO DE LIMPEZA URBANA                                                       	AGENTE GRS                    	                                                            	ATIVO                         	1	2013	3153.60
+ADEMAR PEREIRA LIMA                               	***257671**	SECRETARIA DE ESTADO DE SAUDE                                                   	                              	                                                            	ATIVO                         	1	2013	655.06
+ADEMAR PINTO PONTES                               	***297811**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	TECNICO DE GESTAO FAZENDARIA  	                                                            	APOSENTADO                    	1	2013	11209.86
+ADEMAR PORTO FILHO                                	***156571**	SECRETARIA DE ESTADO DE AGRICULTURA, ABASTEC. E DESENVOLVIMENTO RURAL           	AUX. DESENV. FISCALIZ. AGROP  	                                                            	ATIVO                         	1	2013	5594.15
+ADEMAR SEUFITELI DUTRA                            	***688961**	SOCIEDADE DE ABASTECIMENTO DE BRASILIA                                          	ARTIFICE ESPECIALIZADO        	                                                            	ATIVO                         	1	2013	4281.74
+ADEMAR SHIRAISHI                                  	***001128**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	TECNICO GE APOIO ADMINISTRAT  	                                                            	PENSAO                        	1	2013	4932.12
+ADEMAR TORRES DE BARROS                           	***622211**	ADMINISTRACAO REGIONAL DE PLANALTINA                                            	                              	CHEFE                                                       	ATIVO                         	1	2013	5008.37
+ADEMARIO CARVALHO DOS SANTOS                      	***408225**	DEPARTAMENTO DE ESTRADAS DE RODAGEM DO DF                                       	TECNICO ATIV. RODOVIARIAS     	                                                            	ATIVO                         	1	2013	5995.61
+ADEMARIO REGIS DE BRITTO NETO                     	***193644**	SECRETARIA DE ESTADO DE SAUDE                                                   	PSICOLOGO                     	GERENTE                                                     	ATIVO                         	1	2013	6608.39
+ADEMARIO REGIS DE BRITTO NETO                     	***193644**	SECRETARIA DE ESTADO DE SAUDE                                                   	PSICOLOGO                     	                                                            	ATIVO                         	1	2013	2943.39
+ADEMIAS BATISTA RIBEIRO                           	***885231**	SECRETARIA DE ESTADO DE SAUDE                                                   	AUXILIAR DE ENFERMAGEM        	                                                            	ATIVO                         	1	2013	6380.81
+ADEMIL RODRIGUES FRANCISCO                        	***776631**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	ANALISTA POL PUBL E GEST GOV  	                                                            	APOSENTADO                    	1	2013	4871.15
+ADEMILDA DE SOUZA SANTOS                          	***667131**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	ANALISTA POL PUBL E GEST GOV  	                                                            	PENSAO                        	1	2013	890.24
+ADEMILDE DA CONCEICAO SANTOS                      	***111731**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	TECNICO POL PUBL E GEST GOV   	                                                            	PENSAO                        	1	2013	2175.98
+ADEMILDE ESTEVAM DE LIMA                          	***407831**	SECRETARIA DE ESTADO DE SAUDE                                                   	AUXILIAR DE ENFERMAGEM        	                                                            	APOSENTADO                    	1	2013	4136.38
+ADEMILDE IARA CALDAS BATISTA                      	***579681**	SECRETARIA DE ESTADO DE SAUDE                                                   	ENFERMEIRO                    	                                                            	APOSENTADO                    	1	2013	6794.86
+ADEMILDE MARIA DA COSTA                           	***684546**	SECRETARIA DE ESTADO DE SAUDE                                                   	AUXILIAR DE ENFERMAGEM        	                                                            	ATIVO                         	1	2013	2646.27
+ADEMILDE PEREIRA DE A SOUZA                       	***299745**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	                                                            	APOSENTADO                    	1	2013	6280.38
+ADEMILDO MESQUITA                                 	***534621**	SECRETARIA DE ESTADO DE SAUDE                                                   	AUXILIAR DE ENFERMAGEM        	                                                            	APOSENTADO                    	1	2013	6398.30
+ADEMILSON ALVES DE BARROS                         	***756071**	SEC.DE ESTADO DA CASA CIVIL,RELACOES INSTITUCIONAIS E SOCIAIS DO DF             	                              	ASSESSOR TECNICO PM                                         	ATIVO                         	1	2013	3084.44
+ADEMILSON APARECIDO RONCHI                        	***898051**	SECRETARIA DE ESTADO DE SAUDE                                                   	ANALISTA POL PUBL E GEST GOV  	                                                            	ATIVO                         	1	2013	5602.71
+ADEMILSON BARBOZA DE SOUZA                        	***147921**	SECRETARIA DE ESTADO DE ADMINISTRACAO PUBLICA DO DF                             	MOTORISTA                     	                                                            	ATIVO                         	1	2013	1745.60
+ADEMILSON DE AZEVEDO CALDAS                       	***953507**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	                                                            	ATIVO                         	1	2013	6605.52
+ADEMILSON JOSE MIRANDA                            	***918238**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	TEC.ASS.SOC.-AG.ADMINISTRATI  	                                                            	APOSENTADO                    	1	2013	9222.30
+ADEMILSON JUSTO DA SILVA                          	***216471**	SECRETARIA DE ESTADO DE JUSTICA E CIDADANIA                                     	                              	                                                            	ATIVO                         	1	2013	600.00
+ADEMILSON SOARES DOS SANTOS                       	***256551**	SECRETARIA DE ESTADO DE SAUDE                                                   	SUPERVISOR DE SEG. DO TRABAL  	                                                            	ATIVO                         	1	2013	4464.92
+ADEMILTON ALVES DE OLIVEIRA                       	***613121**	SERVICO DE LIMPEZA URBANA                                                       	AGENTE GRS                    	                                                            	ATIVO                         	1	2013	4094.68
+ADEMILTON ANDRE DE SOUZA CIRQUEIRA BRITO          	***305481**	SECRETARIA DE ESTADO DE SAUDE                                                   	MOTORISTA                     	                                                            	ATIVO                         	1	2013	2716.88
+ADEMILTON DE SOUZA CARDOZO                        	***315431**	COMPANHIA URBANIZADORA DA NOVA CAPITAL DO BRASIL                                	AGENTE DE SERVICOS GERAIS     	                                                            	ATIVO                         	1	2013	2921.37
+ADEMILTON PEREIRA SANTOS                          	***761111**	ADMINISTRACAO REGIONAL DE SAMAMBAIA                                             	                              	ENCARREGADO                                                 	ATIVO                         	1	2013	1056.34
+ADEMIR A. SILVA                                   	***517331**	INSTITUTO DE PREVIDENCIA DOS SERVIDORES DO DISTRITO FEDERAL                     	TECNICO ATIV. RODOVIARIAS     	                                                            	APOSENTADO                    	1	2013	5299.17
+ADEMIR A. SILVA                                   	***517331**	DEPARTAMENTO DE ESTRADAS DE RODAGEM DO DF                                       	TECNICO ATIV. RODOVIARIAS     	                                                            	APOSENTADO                    	1	2013	1100.70
+ADEMIR ALVES DA SILVA                             	***561141**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	                                                            	ATIVO                         	1	2013	6990.41
+ADEMIR ANTONIO TELES                              	***470471**	SECRETARIA DE ESTADO DE EDUCACAO,ESPORTE E LAZER DF                             	PROFESSOR CLASSE A            	                                                            	APOSENTADO                    	1	2013	6782.63
+ADEMIR APARECIDO DA SILVA                         	***144677**	SECRETARIA DE ESTADO DE FAZENDA DO DISTRITO FEDERAL                             	AUDITOR-FISCAL DA RECEITA DF  	GERENTE                                                     	ATIVO                         	1	2013	16036.80
+ADEMIR ARAUJO DE OLIVEIRA                         	***053431**	COMPANHIA URBANIZADORA DA NOVA CAPITAL DO BRASIL                                	AGENTE DE SERVICOS GERAIS     	                                                            	ATIVO                         	1	2013	4045.18
+\.
+
+
+--
+-- TOC entry 2825 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2024-11-19 14:37:29
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- Database "postgres" dump
+--
+
+\connect postgres
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.20
+-- Dumped by pg_dump version 16.4
+
+-- Started on 2024-11-19 14:37:29
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 7 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- TOC entry 1 (class 3079 OID 16384)
+-- Name: adminpack; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 2814 (class 0 OID 0)
+-- Dependencies: 1
+-- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
+
+
+--
+-- TOC entry 2813 (class 0 OID 0)
+-- Dependencies: 7
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2024-11-19 14:37:29
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- Database "restaurante" dump
+--
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.20
+-- Dumped by pg_dump version 16.4
+
+-- Started on 2024-11-19 14:37:30
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2959 (class 1262 OID 24589)
+-- Name: restaurante; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE restaurante WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Portuguese_Brazil.1252';
+
+
+ALTER DATABASE restaurante OWNER TO postgres;
+
+\connect restaurante
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 6 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 215 (class 1259 OID 24691)
+-- Name: agencia; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.agencia (
+    banco_numero integer NOT NULL,
+    numero integer NOT NULL,
+    nome character varying(80) NOT NULL,
+    ativo boolean DEFAULT true NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.agencia OWNER TO postgres;
+
+--
+-- TOC entry 214 (class 1259 OID 24684)
+-- Name: banco; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.banco (
+    numero integer NOT NULL,
+    nome character varying(50) NOT NULL,
+    ativo boolean DEFAULT true NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.banco OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 24705)
+-- Name: cliente; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cliente (
+    numero bigint NOT NULL,
+    nome character varying(120) NOT NULL,
+    email character varying(250) NOT NULL,
+    ativo boolean DEFAULT true NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.cliente OWNER TO postgres;
+
+--
+-- TOC entry 216 (class 1259 OID 24703)
+-- Name: cliente_numero_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cliente_numero_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.cliente_numero_seq OWNER TO postgres;
+
+--
+-- TOC entry 2961 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: cliente_numero_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cliente_numero_seq OWNED BY public.cliente.numero;
+
+
+--
+-- TOC entry 222 (class 1259 OID 24742)
+-- Name: cliente_transacoes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cliente_transacoes (
+    id bigint NOT NULL,
+    banco_numero integer NOT NULL,
+    agencia_numero integer NOT NULL,
+    conta_corrente_numero bigint NOT NULL,
+    conta_corrente_digito smallint NOT NULL,
+    cliente_numero bigint NOT NULL,
+    tipo_transacao_id smallint NOT NULL,
+    valor numeric(15,2) NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.cliente_transacoes OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 24740)
+-- Name: cliente_transacoes_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cliente_transacoes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.cliente_transacoes_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2962 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: cliente_transacoes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cliente_transacoes_id_seq OWNED BY public.cliente_transacoes.id;
+
+
+--
+-- TOC entry 213 (class 1259 OID 24667)
+-- Name: comissoes_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.comissoes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.comissoes_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 207 (class 1259 OID 24639)
+-- Name: comissoes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.comissoes (
+    id integer DEFAULT nextval('public.comissoes_id_seq'::regclass) NOT NULL,
+    funcionario_id integer,
+    comissao_valor real,
+    comissao_situacao character varying(1) DEFAULT 'A'::character varying,
+    data_criacao timestamp without time zone,
+    data_atualizacao timestamp without time zone
+);
+
+
+ALTER TABLE public.comissoes OWNER TO postgres;
+
+--
+-- TOC entry 218 (class 1259 OID 24713)
+-- Name: conta_corrente; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.conta_corrente (
+    banco_numero integer NOT NULL,
+    agencia_numero integer NOT NULL,
+    numero bigint NOT NULL,
+    digito smallint NOT NULL,
+    cliente_numero bigint NOT NULL,
+    ativo boolean DEFAULT true NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.conta_corrente OWNER TO postgres;
+
+--
+-- TOC entry 212 (class 1259 OID 24665)
+-- Name: funcionarios_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.funcionarios_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.funcionarios_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 203 (class 1259 OID 24596)
+-- Name: funcionarios; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.funcionarios (
+    id integer DEFAULT nextval('public.funcionarios_id_seq'::regclass) NOT NULL,
+    funcionario_codigo character varying(20),
+    funcionario_nome character varying(100),
+    funcionario_situacao character varying(1) DEFAULT 'A'::character varying,
+    funcionario_comissao real,
+    funcionario_cargo character varying(30),
+    data_criacao timestamp without time zone,
+    data_atualizacao timestamp without time zone,
+    CONSTRAINT funcionarios_funcionario_nome_check CHECK (((funcionario_nome)::text <> NULL::text))
+);
+
+
+ALTER TABLE public.funcionarios OWNER TO postgres;
+
+--
+-- TOC entry 210 (class 1259 OID 24661)
+-- Name: itens_vendas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.itens_vendas_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.itens_vendas_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 206 (class 1259 OID 24624)
+-- Name: itens_vendas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.itens_vendas (
+    id integer DEFAULT nextval('public.itens_vendas_id_seq'::regclass) NOT NULL,
+    produto_id integer NOT NULL,
+    vendas_id integer NOT NULL,
+    item_valo0r real,
+    item_quantidade integer,
+    item_total real,
+    data_criacao timestamp without time zone,
+    data_atualizacao timestamp without time zone
+);
+
+
+ALTER TABLE public.itens_vendas OWNER TO postgres;
+
+--
+-- TOC entry 208 (class 1259 OID 24657)
+-- Name: mesa_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.mesa_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.mesa_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 202 (class 1259 OID 24590)
+-- Name: mesas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.mesas (
+    id integer DEFAULT nextval('public.mesa_id_seq'::regclass) NOT NULL,
+    mesas_codigo character varying(20),
+    mesa_situacao character varying(1) DEFAULT 'A'::character varying,
+    data_criacao timestamp without time zone,
+    data_atualizacao timestamp without time zone
+);
+
+
+ALTER TABLE public.mesas OWNER TO postgres;
+
+--
+-- TOC entry 211 (class 1259 OID 24663)
+-- Name: produtos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.produtos_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.produtos_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 205 (class 1259 OID 24618)
+-- Name: produtos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.produtos (
+    id integer DEFAULT nextval('public.produtos_id_seq'::regclass) NOT NULL,
+    produto_codigo character varying(20),
+    produto_nome character varying(60),
+    produto_valor real,
+    produto_situacao character varying(1) DEFAULT 'A'::character varying,
+    data_criacao timestamp without time zone,
+    data_atualizacao timestamp without time zone
+);
+
+
+ALTER TABLE public.produtos OWNER TO postgres;
+
+--
+-- TOC entry 220 (class 1259 OID 24732)
+-- Name: tipo_transacao; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tipo_transacao (
+    id smallint NOT NULL,
+    nome character varying(50) NOT NULL,
+    ativo boolean DEFAULT true NOT NULL,
+    data_criacao timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.tipo_transacao OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 24730)
+-- Name: tipo_transacao_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.tipo_transacao_id_seq
+    AS smallint
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.tipo_transacao_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2963 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: tipo_transacao_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.tipo_transacao_id_seq OWNED BY public.tipo_transacao.id;
+
+
+--
+-- TOC entry 209 (class 1259 OID 24659)
+-- Name: vendas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.vendas_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.vendas_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 204 (class 1259 OID 24602)
+-- Name: vendas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.vendas (
+    id integer DEFAULT nextval('public.vendas_id_seq'::regclass) NOT NULL,
+    funcionario_id integer,
+    mesas_id integer,
+    venda_codigo character varying(20),
+    venda_valor real,
+    venda_total real,
+    venda_desconto real,
+    venda_situacao character varying(1) DEFAULT 'A'::character varying,
+    data_criacao timestamp without time zone,
+    data_atualizacao timestamp without time zone,
+    CONSTRAINT vendas_venda_total_check CHECK ((venda_total > (0)::double precision))
+);
+
+
+ALTER TABLE public.vendas OWNER TO postgres;
+
+--
+-- TOC entry 2762 (class 2604 OID 24708)
+-- Name: cliente numero; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cliente ALTER COLUMN numero SET DEFAULT nextval('public.cliente_numero_seq'::regclass);
+
+
+--
+-- TOC entry 2770 (class 2604 OID 24745)
+-- Name: cliente_transacoes id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cliente_transacoes ALTER COLUMN id SET DEFAULT nextval('public.cliente_transacoes_id_seq'::regclass);
+
+
+--
+-- TOC entry 2767 (class 2604 OID 24735)
+-- Name: tipo_transacao id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tipo_transacao ALTER COLUMN id SET DEFAULT nextval('public.tipo_transacao_id_seq'::regclass);
+
+
+--
+-- TOC entry 2946 (class 0 OID 24691)
+-- Dependencies: 215
+-- Data for Name: agencia; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.agencia (banco_numero, numero, nome, ativo, data_criacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2945 (class 0 OID 24684)
+-- Dependencies: 214
+-- Data for Name: banco; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.banco (numero, nome, ativo, data_criacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2948 (class 0 OID 24705)
+-- Dependencies: 217
+-- Data for Name: cliente; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cliente (numero, nome, email, ativo, data_criacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2953 (class 0 OID 24742)
+-- Dependencies: 222
+-- Data for Name: cliente_transacoes; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cliente_transacoes (id, banco_numero, agencia_numero, conta_corrente_numero, conta_corrente_digito, cliente_numero, tipo_transacao_id, valor, data_criacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2938 (class 0 OID 24639)
+-- Dependencies: 207
+-- Data for Name: comissoes; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.comissoes (id, funcionario_id, comissao_valor, comissao_situacao, data_criacao, data_atualizacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2949 (class 0 OID 24713)
+-- Dependencies: 218
+-- Data for Name: conta_corrente; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.conta_corrente (banco_numero, agencia_numero, numero, digito, cliente_numero, ativo, data_criacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2934 (class 0 OID 24596)
+-- Dependencies: 203
+-- Data for Name: funcionarios; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.funcionarios (id, funcionario_codigo, funcionario_nome, funcionario_situacao, funcionario_comissao, funcionario_cargo, data_criacao, data_atualizacao) FROM stdin;
+1	F001	Carlos Silva	A	1500	Garcom	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+2	F002	Ana Pereira	A	1600	Garconete	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+3	F003	Jose Souza	A	1700	Caixa	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+4	F004	Fernanda Oliveira	A	1800	Garcom	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+5	F005	Mariana Costa	A	1900	Garconete	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+6	F006	Roberto Lima	A	2000	Gerente	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+7	F007	Patricia Almeida	A	2100	Garcom	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+8	F008	Lucas Martins	A	2200	Gerente	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+9	F009	Claudia Souza	A	2300	Caixa	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+10	F010	Paulo Lima	A	2400	Garcom	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+11	F011	Julia Santos	A	2500	Garconete	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+12	F012	Eduardo Ferreira	A	2600	Gerente	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+13	F013	Ricardo Alves	A	2700	Caixa	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+14	F014	Beatriz Costa	A	2800	Garcom	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+15	F015	Tiago Rocha	A	2900	Gerente	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+16	F016	Juliana Silva	A	3000	Garcom	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+17	F017	Sofia Ferreira	A	3100	Garconete	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+18	F018	Gustavo Mendes	A	3200	Caixa	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+19	F019	Renata Lima	A	3300	Garcom	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+20	F020	Marcelo Costa	A	3400	Gerente	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+21	F021	Luana Ferreira	A	3500	Garconete	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+22	F022	Daniel Souza	A	3600	Caixa	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+23	F023	Marcos Santos	A	3700	Garcom	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+24	F024	Aline Oliveira	A	3800	Garconete	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+25	F025	Vinicius Rocha	A	3900	Gerente	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+26	F026	Flavia Martins	A	4000	Caixa	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+27	F027	Andre Almeida	A	4100	Garcom	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+28	F028	Camila Costa	A	4200	Garconete	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+29	F029	Felipe Rocha	A	4300	Caixa	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+30	F030	Sergio Lima	A	4400	Gerente	2024-11-12 14:50:23.082273	2024-11-12 14:50:23.082273
+\.
+
+
+--
+-- TOC entry 2937 (class 0 OID 24624)
+-- Dependencies: 206
+-- Data for Name: itens_vendas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.itens_vendas (id, produto_id, vendas_id, item_valo0r, item_quantidade, item_total, data_criacao, data_atualizacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2933 (class 0 OID 24590)
+-- Dependencies: 202
+-- Data for Name: mesas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.mesas (id, mesas_codigo, mesa_situacao, data_criacao, data_atualizacao) FROM stdin;
+1	M001	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+2	M002	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+3	M003	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+4	M004	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+5	M005	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+6	M006	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+7	M007	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+8	M008	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+9	M009	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+10	M010	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+11	M011	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+12	M012	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+13	M013	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+14	M014	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+15	M015	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+16	M016	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+17	M017	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+18	M018	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+19	M019	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+20	M020	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+21	M021	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+22	M022	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+23	M023	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+24	M024	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+25	M025	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+26	M026	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+27	M027	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+28	M028	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+29	M029	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+30	M030	A	2024-11-12 14:24:25.887056	2024-11-12 14:24:25.887056
+\.
+
+
+--
+-- TOC entry 2936 (class 0 OID 24618)
+-- Dependencies: 205
+-- Data for Name: produtos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.produtos (id, produto_codigo, produto_nome, produto_valor, produto_situacao, data_criacao, data_atualizacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2951 (class 0 OID 24732)
+-- Dependencies: 220
+-- Data for Name: tipo_transacao; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.tipo_transacao (id, nome, ativo, data_criacao) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2935 (class 0 OID 24602)
+-- Dependencies: 204
+-- Data for Name: vendas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.vendas (id, funcionario_id, mesas_id, venda_codigo, venda_valor, venda_total, venda_desconto, venda_situacao, data_criacao, data_atualizacao) FROM stdin;
+1	1	1	V001	100	120	20	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+2	2	2	V002	200	240	40	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+3	3	3	V003	150	180	30	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+4	4	4	V004	300	360	60	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+5	5	5	V005	250	300	50	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+6	6	6	V006	500	600	100	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+7	7	7	V007	350	420	70	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+8	8	8	V008	400	480	80	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+9	9	9	V009	450	540	90	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+10	10	10	V010	500	600	100	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+11	11	11	V011	550	660	110	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+12	12	12	V012	600	720	120	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+13	13	13	V013	650	780	130	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+14	14	14	V014	700	840	140	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+15	15	15	V015	750	900	150	A	2024-11-12 15:02:12.73117	2024-11-12 15:02:12.73117
+\.
+
+
+--
+-- TOC entry 2964 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: cliente_numero_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cliente_numero_seq', 1, false);
+
+
+--
+-- TOC entry 2965 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: cliente_transacoes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cliente_transacoes_id_seq', 1, false);
+
+
+--
+-- TOC entry 2966 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: comissoes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.comissoes_id_seq', 1, false);
+
+
+--
+-- TOC entry 2967 (class 0 OID 0)
+-- Dependencies: 212
+-- Name: funcionarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.funcionarios_id_seq', 1, false);
+
+
+--
+-- TOC entry 2968 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: itens_vendas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.itens_vendas_id_seq', 1, false);
+
+
+--
+-- TOC entry 2969 (class 0 OID 0)
+-- Dependencies: 208
+-- Name: mesa_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.mesa_id_seq', 1, false);
+
+
+--
+-- TOC entry 2970 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: produtos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.produtos_id_seq', 1, false);
+
+
+--
+-- TOC entry 2971 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: tipo_transacao_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.tipo_transacao_id_seq', 1, false);
+
+
+--
+-- TOC entry 2972 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: vendas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.vendas_id_seq', 1, false);
+
+
+--
+-- TOC entry 2789 (class 2606 OID 24697)
+-- Name: agencia agencia_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.agencia
+    ADD CONSTRAINT agencia_pkey PRIMARY KEY (banco_numero, numero);
+
+
+--
+-- TOC entry 2787 (class 2606 OID 24690)
+-- Name: banco banco_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.banco
+    ADD CONSTRAINT banco_pkey PRIMARY KEY (numero);
+
+
+--
+-- TOC entry 2791 (class 2606 OID 24712)
+-- Name: cliente cliente_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cliente
+    ADD CONSTRAINT cliente_pkey PRIMARY KEY (numero);
+
+
+--
+-- TOC entry 2797 (class 2606 OID 24748)
+-- Name: cliente_transacoes cliente_transacoes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cliente_transacoes
+    ADD CONSTRAINT cliente_transacoes_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2785 (class 2606 OID 24644)
+-- Name: comissoes comissoes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.comissoes
+    ADD CONSTRAINT comissoes_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2793 (class 2606 OID 24719)
+-- Name: conta_corrente conta_corrente_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conta_corrente
+    ADD CONSTRAINT conta_corrente_pkey PRIMARY KEY (banco_numero, agencia_numero, numero, digito, cliente_numero);
+
+
+--
+-- TOC entry 2777 (class 2606 OID 24601)
+-- Name: funcionarios funcionarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.funcionarios
+    ADD CONSTRAINT funcionarios_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2783 (class 2606 OID 24628)
+-- Name: itens_vendas itens_vendas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.itens_vendas
+    ADD CONSTRAINT itens_vendas_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2775 (class 2606 OID 24595)
+-- Name: mesas mesas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.mesas
+    ADD CONSTRAINT mesas_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2781 (class 2606 OID 24623)
+-- Name: produtos produtos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.produtos
+    ADD CONSTRAINT produtos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2795 (class 2606 OID 24739)
+-- Name: tipo_transacao tipo_transacao_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tipo_transacao
+    ADD CONSTRAINT tipo_transacao_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2779 (class 2606 OID 24607)
+-- Name: vendas vendas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendas
+    ADD CONSTRAINT vendas_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2803 (class 2606 OID 24698)
+-- Name: agencia agencia_banco_numero_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.agencia
+    ADD CONSTRAINT agencia_banco_numero_fkey FOREIGN KEY (banco_numero) REFERENCES public.banco(numero);
+
+
+--
+-- TOC entry 2806 (class 2606 OID 24749)
+-- Name: cliente_transacoes cliente_transacoes_banco_numero_agencia_numero_conta_corre_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cliente_transacoes
+    ADD CONSTRAINT cliente_transacoes_banco_numero_agencia_numero_conta_corre_fkey FOREIGN KEY (banco_numero, agencia_numero, conta_corrente_numero, conta_corrente_digito, cliente_numero) REFERENCES public.conta_corrente(banco_numero, agencia_numero, numero, digito, cliente_numero);
+
+
+--
+-- TOC entry 2802 (class 2606 OID 24650)
+-- Name: comissoes comissoes_funcionario_id_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.comissoes
+    ADD CONSTRAINT comissoes_funcionario_id_fkey1 FOREIGN KEY (funcionario_id) REFERENCES public.funcionarios(id);
+
+
+--
+-- TOC entry 2804 (class 2606 OID 24720)
+-- Name: conta_corrente conta_corrente_banco_numero_agencia_numero_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conta_corrente
+    ADD CONSTRAINT conta_corrente_banco_numero_agencia_numero_fkey FOREIGN KEY (banco_numero, agencia_numero) REFERENCES public.agencia(banco_numero, numero);
+
+
+--
+-- TOC entry 2805 (class 2606 OID 24725)
+-- Name: conta_corrente conta_corrente_cliente_numero_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conta_corrente
+    ADD CONSTRAINT conta_corrente_cliente_numero_fkey FOREIGN KEY (cliente_numero) REFERENCES public.cliente(numero);
+
+
+--
+-- TOC entry 2800 (class 2606 OID 24629)
+-- Name: itens_vendas itens_vendas_produto_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.itens_vendas
+    ADD CONSTRAINT itens_vendas_produto_id_fkey FOREIGN KEY (produto_id) REFERENCES public.produtos(id);
+
+
+--
+-- TOC entry 2801 (class 2606 OID 24634)
+-- Name: itens_vendas itens_vendas_vendas_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.itens_vendas
+    ADD CONSTRAINT itens_vendas_vendas_id_fkey FOREIGN KEY (vendas_id) REFERENCES public.vendas(id);
+
+
+--
+-- TOC entry 2798 (class 2606 OID 24608)
+-- Name: vendas vendas_funcionario_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendas
+    ADD CONSTRAINT vendas_funcionario_id_fkey FOREIGN KEY (funcionario_id) REFERENCES public.funcionarios(id);
+
+
+--
+-- TOC entry 2799 (class 2606 OID 24613)
+-- Name: vendas vendas_mesas_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendas
+    ADD CONSTRAINT vendas_mesas_id_fkey FOREIGN KEY (mesas_id) REFERENCES public.funcionarios(id);
+
+
+--
+-- TOC entry 2960 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2024-11-19 14:37:31
+
+--
+-- PostgreSQL database dump complete
+--
+
+-- Completed on 2024-11-19 14:37:31
+
+--
+-- PostgreSQL database cluster dump complete
+--
+
